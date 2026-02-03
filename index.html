@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ញ៉ាំអី? - Mood Food Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kantumruy Pro', sans-serif;
+            background-color: #fdfbf7;
+        }
+        .emoji-animate {
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .emoji-animate:hover {
+            transform: scale(1.2) rotate(10deg);
+        }
+        .card-enter {
+            animation: slideUp 0.5s ease-out forwards;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-orange-50 to-yellow-100">
+
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden border border-orange-100">
+        <!-- Header -->
+        <div class="bg-orange-500 p-6 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/food.png')]"></div>
+            <h1 class="text-3xl font-bold text-white relative z-10">ញ៉ាំអីថ្ងៃនេះ?</h1>
+            <p class="text-orange-100 mt-2 text-sm relative z-10">ប្រាប់អារម្មណ៍របស់អ្នក ខ្ញុំនឹងប្រាប់ថាគួរញ៉ាំអី</p>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6" id="app-content">
+            
+            <!-- Step 1: Mood Selection -->
+            <div id="mood-selection">
+                <h2 class="text-xl font-semibold text-gray-800 mb-6 text-center">តើថ្ងៃនេះអ្នកមានអារម្មណ៍បែបណា?</h2>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="selectMood('happy')" class="emoji-animate p-4 rounded-2xl bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 flex flex-col items-center gap-2 group cursor-pointer transition-all">
+                        <span class="text-4xl">😄</span>
+                        <span class="font-medium text-gray-700 group-hover:text-yellow-700">សប្បាយចិត្ត</span>
+                    </button>
+
+                    <button onclick="selectMood('tired')" class="emoji-animate p-4 rounded-2xl bg-blue-50 hover:bg-blue-100 border border-blue-200 flex flex-col items-center gap-2 group cursor-pointer transition-all">
+                        <span class="text-4xl">😮‍💨</span>
+                        <span class="font-medium text-gray-700 group-hover:text-blue-700">ហត់នឿយ</span>
+                    </button>
+
+                    <button onclick="selectMood('sad')" class="emoji-animate p-4 rounded-2xl bg-gray-50 hover:bg-gray-100 border border-gray-200 flex flex-col items-center gap-2 group cursor-pointer transition-all">
+                        <span class="text-4xl">😢</span>
+                        <span class="font-medium text-gray-700 group-hover:text-gray-700">ពិបាកចិត្ត</span>
+                    </button>
+
+                    <button onclick="selectMood('angry')" class="emoji-animate p-4 rounded-2xl bg-red-50 hover:bg-red-100 border border-red-200 flex flex-col items-center gap-2 group cursor-pointer transition-all">
+                        <span class="text-4xl">😤</span>
+                        <span class="font-medium text-gray-700 group-hover:text-red-700">ខឹង/ធុញ</span>
+                    </button>
+                    
+                    <button onclick="selectMood('romantic')" class="emoji-animate p-4 rounded-2xl bg-pink-50 hover:bg-pink-100 border border-pink-200 flex flex-col items-center gap-2 group cursor-pointer transition-all col-span-2">
+                        <span class="text-4xl">🥰</span>
+                        <span class="font-medium text-gray-700 group-hover:text-pink-700">មានស្នេហា / រ៉ូមែនទិក</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Result (Hidden by default) -->
+            <div id="result-view" class="hidden card-enter">
+                <div class="text-center mb-6">
+                    <span id="result-emoji" class="text-6xl mb-4 block animate-bounce"></span>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2" id="food-name"></h2>
+                    <p class="text-gray-500 italic" id="food-quote"></p>
+                </div>
+
+                <div class="bg-orange-50 rounded-xl p-4 border border-orange-200 mb-6">
+                    <h3 class="font-semibold text-orange-800 mb-2">ហេតុអ្វីម៉ឺនុយនេះ?</h3>
+                    <p class="text-sm text-gray-700 leading-relaxed" id="food-reason"></p>
+                </div>
+
+                <div class="space-y-3">
+                    <button onclick="resetApp()" class="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-semibold shadow-lg shadow-orange-200 transition-all active:scale-95">
+                        លេងម្តងទៀត
+                    </button>
+                    <button class="w-full py-3 bg-white border border-gray-200 text-gray-600 rounded-xl font-medium hover:bg-gray-50 transition-all">
+                        រកហាងនៅជិតខ្ញុំ (Coming Soon)
+                    </button>
+                </div>
+            </div>
+
+             <!-- Loading State -->
+             <div id="loading-view" class="hidden flex-col items-center justify-center py-10">
+                <div class="w-12 h-12 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin mb-4"></div>
+                <p class="text-gray-500 animate-pulse">កំពុងពិចារណា...</p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Database of foods mapped to moods
+        const foodData = {
+            happy: [
+                { name: "សាច់អាំង / គ្រឿងក្លែម", emoji: "🥓", quote: "សប្បាយចិត្តត្រូវតែជប់លៀង!", reason: "អារម្មណ៍ល្អបែបនេះ ត្រូវការម្ហូបដែលមានរសជាតិដិត និងអាចញ៉ាំជុំគ្នាបាន។ សាច់អាំង ឬស៊ុប គឺជាជម្រើសដ៏ល្អបំផុត!" },
+                { name: "ភីហ្សា (Pizza)", emoji: "🍕", quote: "ចែករំលែកក្តីសុខ!", reason: "ឈីស និងម្សៅនំដុតក្តៅៗ ជួយបង្កើនអរម៉ូនក្តីសុខរបស់អ្នកឱ្យកាន់តែខ្ពស់។" }
+            ],
+            tired: [
+                { name: "បបរគ្រឿង", emoji: "🍲", quote: "ស្រួលលេប កក់ក្តៅពោះ", reason: "ពេលហត់ រាងកាយត្រូវការអាហារដែលងាយរំលាយ និងមានជាតិទឹកក្តៅៗ ដើម្បីឱ្យមានកម្លាំងឡើងវិញ។" },
+                { name: "ស៊ុបមាន់ស្ងោរងាំង៉ូវ", emoji: "🥣", quote: "ជូរហឹរ ស្វាងចែស", reason: "រសជាតិជូរនៃក្រូចឆ្មារងាំង៉ូវ នឹងជួយដាស់អារម្មណ៍ឱ្យស្រស់ស្រាយ និងបាត់ភាពនឿយហត់។" }
+            ],
+            sad: [
+                { name: "ការ៉េម ឬ បង្អែម", emoji: "🍦", quote: "ផ្អែមល្ហែម លួងចិត្ត", reason: "ជាតិស្ករក្នុងបង្អែម ជួយបញ្ចេញសារធាតុ Dopamine ក្នុងខួរក្បាល ធ្វើឱ្យអ្នកមានអារម្មណ៍ធូរស្រាលមួយកម្រិត។" },
+                { name: "មីហឹរ ៧កម្រិត", emoji: "🍜", quote: "យំឱ្យអស់ចិត្តចេញមក", reason: "រសជាតិហឹរខ្លាំង ធ្វើឱ្យរាងកាយបញ្ចេញ Endorphins (ថ្នាំបំបាត់ការឈឺចាប់តាមធម្មជាតិ) ហើយញើសដែលចេញមក ជួយរំសាយទុក្ខ។" }
+            ],
+            angry: [
+                { name: "បុកល្ហុង ក្តាមប្រៃ", emoji: "🥗", quote: "ទំពារឱ្យបាត់ខឹង!", reason: "រសជាតិហឹរ ប្រៃ ជូរ និងសរសៃល្ហុងស្រួយៗ ដែលត្រូវទំពារខ្លាំងៗ ជួយរំសាយភាពតានតឹងនិងកំហឹងបានយ៉ាងល្អ។" },
+                { name: "ភ្លាគោ ឬ សាច់ញ៉ាំ", emoji: "🥩", quote: "រសជាតិដិតៗ", reason: "រសជាតិដែលខ្លាំង (Bold flavors) អាចជួយបង្វែរអារម្មណ៍របស់អ្នកពីការខឹង មកផ្តោតលើរសជាតិអាហារវិញ។" }
+            ],
+            romantic: [
+                { name: "Steak និង ស្រាក្រហម", emoji: "🍷", quote: "បរិយាកាសរ៉ូមែនទិក", reason: "ត្រូវការអាហារដែលញ៉ាំយឺតៗ ដើម្បីមានពេលនិយាយគ្នា និងសម្លឹងមើលភ្នែកគ្នា។" },
+                { name: "អាហារជប៉ុន (Sushi)", emoji: "🍣", quote: "ស្រស់ស្អាត និង ផ្ចិតផ្ចង់", reason: "ការតុបតែងដ៏ស្អាត និងរសជាតិស្រាលៗ មិនធ្វើឱ្យធ្ងន់ពោះ ងាយស្រួលបន្តដំណើរទៅ... មើលកុន។" }
+            ]
+        };
+
+        function selectMood(mood) {
+            // Hide selection, show loading
+            document.getElementById('mood-selection').classList.add('hidden');
+            document.getElementById('loading-view').classList.remove('hidden');
+            document.getElementById('loading-view').classList.add('flex');
+
+            // Simulate AI thinking time
+            setTimeout(() => {
+                showResult(mood);
+            }, 1200);
+        }
+
+        function showResult(mood) {
+            // Get random food from category
+            const options = foodData[mood];
+            const result = options[Math.floor(Math.random() * options.length)];
+
+            // Update UI
+            document.getElementById('result-emoji').textContent = result.emoji;
+            document.getElementById('food-name').textContent = result.name;
+            document.getElementById('food-quote').textContent = `"${result.quote}"`;
+            document.getElementById('food-reason').textContent = result.reason;
+
+            // Show result view
+            document.getElementById('loading-view').classList.add('hidden');
+            document.getElementById('loading-view').classList.remove('flex');
+            document.getElementById('result-view').classList.remove('hidden');
+        }
+
+        function resetApp() {
+            document.getElementById('result-view').classList.add('hidden');
+            document.getElementById('mood-selection').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
+
